@@ -1,7 +1,7 @@
 package com.lwkandroid.statelayoutdemo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRetry()
             {
-                Toast.makeText(MainActivity.this,"点击重试",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "点击重试", Toast.LENGTH_LONG).show();
             }
         });
         findViewById(R.id.btn_loading).setOnClickListener(new View.OnClickListener()

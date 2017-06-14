@@ -2,10 +2,11 @@ package com.lwkandroid.stateframelayout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -130,6 +131,7 @@ public class StateFrameLayout extends FrameLayout
                 mVsNetError.setLayoutResource(mNetErrorLayoutId);
                 addView(mVsNetError);
             }
+            //切换到初始状态
             changeState(INIT);
             mHasInit = true;
         }
@@ -178,17 +180,29 @@ public class StateFrameLayout extends FrameLayout
     /*切换Loading布局*/
     protected void checkLoadingView()
     {
-        if (mLoadingView == null && mVsLoading != null)
-            mLoadingView = mVsLoading.inflate();
+        if (mLoadingView == null)
+        {
+            if (mVsLoading != null)
+                mLoadingView = mVsLoading.inflate();
+            else if (mLoadingLayoutId != -1)
+                mLoadingView = LayoutInflater.from(getContext()).inflate(mLoadingLayoutId, this, false);
+        }
         if (mLoadingView != null)
+        {
             mLoadingView.setVisibility(View.VISIBLE);
+        }
     }
 
     /*切换Empty布局*/
     protected void checkEmptyView()
     {
-        if (mEmptyView == null && mVsEmpty != null)
-            mEmptyView = mVsEmpty.inflate();
+        if (mEmptyView == null)
+        {
+            if (mVsEmpty != null)
+                mEmptyView = mVsEmpty.inflate();
+            else if (mEmptyLayoutId != -1)
+                mEmptyView = LayoutInflater.from(getContext()).inflate(mEmptyLayoutId, this, false);
+        }
         if (mEmptyView != null)
         {
             View v = mEmptyView.findViewById(R.id.id_sfl_empty_retry);
@@ -209,8 +223,13 @@ public class StateFrameLayout extends FrameLayout
     /*切换NetError布局*/
     protected void checkNetErrorView()
     {
-        if (mNetErrorView == null && mVsNetError != null)
-            mNetErrorView = mVsNetError.inflate();
+        if (mNetErrorView == null)
+        {
+            if (mVsNetError != null)
+                mNetErrorView = mVsNetError.inflate();
+            else if (mNetErrorLayoutId != -1)
+                mNetErrorView = LayoutInflater.from(getContext()).inflate(mNetErrorLayoutId, this, false);
+        }
         if (mNetErrorView != null)
         {
             View v = mNetErrorView.findViewById(R.id.id_sfl_net_error_retry);
@@ -246,6 +265,14 @@ public class StateFrameLayout extends FrameLayout
     }
 
     /**
+     * 获取当前状态
+     */
+    public int getCurrentState()
+    {
+        return mCurState;
+    }
+
+    /**
      * 是否开启内容布局显示动画
      */
     public void enableContentAnim(boolean enable)
@@ -270,34 +297,85 @@ public class StateFrameLayout extends FrameLayout
 
     /****************************************************** 状态恢复 ***********************************************************************/
 
-    private final String KEY_LOADING_ID = "l";
-    private final String KEY_EMPTY_ID = "e";
-    private final String KEY_NET_ERROR_ID = "n";
-    private final String KEY_ENABLE_ANIM = "a";
-
     @Override
     protected Parcelable onSaveInstanceState()
     {
-        super.onSaveInstanceState();
-        Bundle bundle = new Bundle();
-        bundle.putInt(KEY_LOADING_ID, mLoadingLayoutId);
-        bundle.putInt(KEY_EMPTY_ID, mEmptyLayoutId);
-        bundle.putInt(KEY_NET_ERROR_ID, mNetErrorLayoutId);
-        bundle.putBoolean(KEY_ENABLE_ANIM, mEnableContentAnim);
-        return bundle;
+        SavedViewState state = new SavedViewState(super.onSaveInstanceState());
+        state.loadingId = mLoadingLayoutId;
+        state.emptyId = mEmptyLayoutId;
+        state.netErrorId = mNetErrorLayoutId;
+        state.lastState = mCurState;
+        state.enableAnim = mEnableContentAnim;
+        return state;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state)
     {
-        super.onRestoreInstanceState(state);
-        if (state instanceof Bundle)
+        if (!(state instanceof SavedViewState))
         {
-            Bundle bundle = (Bundle) state;
-            this.mLoadingLayoutId = bundle.getInt(KEY_LOADING_ID, -1);
-            this.mEmptyLayoutId = bundle.getInt(KEY_EMPTY_ID, -1);
-            this.mNetErrorLayoutId = bundle.getInt(KEY_NET_ERROR_ID, -1);
-            this.mEnableContentAnim = bundle.getBoolean(KEY_ENABLE_ANIM, true);
+            super.onRestoreInstanceState(state);
+            return;
         }
+
+        SavedViewState ss = (SavedViewState) state;
+        super.onRestoreInstanceState(ss);
+
+        mLoadingLayoutId = ss.loadingId;
+        mEmptyLayoutId = ss.emptyId;
+        mNetErrorLayoutId = ss.netErrorId;
+        mEnableContentAnim = ss.enableAnim;
+        changeState(ss.lastState);
+    }
+
+    static class SavedViewState extends BaseSavedState
+    {
+        int loadingId;
+        int emptyId;
+        int netErrorId;
+        int lastState;
+        boolean enableAnim;
+
+        SavedViewState(Parcelable superState)
+        {
+            super(superState);
+        }
+
+        private SavedViewState(Parcel source)
+        {
+            super(source);
+            loadingId = source.readInt();
+            emptyId = source.readInt();
+            netErrorId = source.readInt();
+            lastState = source.readInt();
+            enableAnim = source.readByte() == (byte) 1;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags)
+        {
+            super.writeToParcel(out, flags);
+            out.writeInt(loadingId);
+            out.writeInt(emptyId);
+            out.writeInt(netErrorId);
+            out.writeInt(lastState);
+            out.writeByte(enableAnim ? (byte) 1 : (byte) 0);
+        }
+
+        public static final Parcelable.Creator<SavedViewState> CREATOR = new Creator<SavedViewState>()
+        {
+            @Override
+            public SavedViewState createFromParcel(Parcel source)
+            {
+                return new SavedViewState(source);
+            }
+
+            @Override
+            public SavedViewState[] newArray(int size)
+            {
+                return new SavedViewState[size];
+            }
+        };
+
     }
 }
