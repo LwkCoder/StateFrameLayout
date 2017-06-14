@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--内容布局id-->
-    <item name="id_sfl_content_view" type="id"/>
     <!--EmptyView触发重试监听的id-->
     <item name="id_sfl_empty_retry" type="id"/>
     <!--NetError触发重试监听的id-->

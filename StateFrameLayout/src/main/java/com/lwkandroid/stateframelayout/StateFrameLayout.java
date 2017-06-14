@@ -111,7 +111,8 @@ public class StateFrameLayout extends FrameLayout
             //初始化
             if (mContentView == null)
             {
-                mContentView = findViewById(R.id.id_sfl_content_view);
+                if (getChildCount() > 0)
+                    mContentView = getChildAt(0);
             }
             if (mLoadingLayoutId != -1)
             {
@@ -250,8 +251,6 @@ public class StateFrameLayout extends FrameLayout
     /*切换内容布局*/
     protected void checkContentView()
     {
-        if (mContentView == null)
-            mContentView = findViewById(R.id.id_sfl_content_view);
         if (mContentView != null)
         {
             if (mEnableContentAnim)

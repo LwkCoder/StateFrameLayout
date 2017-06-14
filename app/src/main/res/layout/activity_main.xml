@@ -47,7 +47,6 @@
         app:netErrorLayoutResId="@layout/layout_net_error">
 
         <TextView
-            android:id="@id/id_sfl_content_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/holo_green_dark"
