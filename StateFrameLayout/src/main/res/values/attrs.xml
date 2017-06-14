@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StateFrameLayout">
+        <attr name="loadingLayoutResId" format="reference"/>
+        <attr name="emptyLayoutResId" format="reference"/>
+        <attr name="netErrorLayoutResId" format="reference"/>
+        <attr name="enableContentAnim" format="boolean"/>
+    </declare-styleable>
+</resources>
