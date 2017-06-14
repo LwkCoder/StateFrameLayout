@@ -46,13 +46,20 @@
         app:loadingLayoutResId="@layout/layout_loading"
         app:netErrorLayoutResId="@layout/layout_net_error">
 
-        <TextView
+        <!--在这里定义内容布局，内容布局只能有一个-->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/holo_green_dark"
-            android:gravity="center"
-            android:text="内容"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            android:background="@android:color/holo_green_dark">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="我是内容"
+                android:textAppearance="?android:textAppearanceLarge"/>
+
+        </FrameLayout>
 
     </com.lwkandroid.stateframelayout.StateFrameLayout>
 
