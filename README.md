@@ -43,7 +43,7 @@ Gradle中引用
 
     </com.lwkandroid.stateframelayout.StateFrameLayout>
 ```
-**备注：** 此外，对于空数据和网络错误的状态提供了**重试**接口，需要在空数据或网络错误布局中指定触发的view对应的id：`android:id="@id/id_sfl_net_error_retry"`
+**备注：** 此外，对于空数据和网络错误的状态提供了**重试**接口，需要在空数据或网络错误布局中指定触发的view对应的id：`android:id="@id/id_sfl_empty_retry"`或`android:id="@id/id_sfl_net_error_retry"`
 
 <br />
 
