@@ -43,6 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:emptyLayoutResId="@layout/layout_empty"
+        app:enableContentAnim="true"
         app:loadingLayoutResId="@layout/layout_loading"
         app:netErrorLayoutResId="@layout/layout_net_error">
 
