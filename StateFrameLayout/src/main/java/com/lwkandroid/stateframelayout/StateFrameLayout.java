@@ -62,7 +62,8 @@ public class StateFrameLayout extends FrameLayout
     @State
     protected int mCurState;
     /*重试监听*/
-    protected OnRetryListener mRetryListener;
+    protected OnEmptyRetryListener mEmptyRetryListener;
+    protected OnNetErrorRetryListener mNetErrorRetryListener;
     protected boolean mHasInit = false;
 
     public StateFrameLayout(Context context)
@@ -213,8 +214,8 @@ public class StateFrameLayout extends FrameLayout
                     @Override
                     public void onClick(View v)
                     {
-                        if (mRetryListener != null)
-                            mRetryListener.onRetry();
+                        if (mEmptyRetryListener != null)
+                            mEmptyRetryListener.onEmptyRetry();
                     }
                 });
             mEmptyView.setVisibility(View.VISIBLE);
@@ -240,8 +241,8 @@ public class StateFrameLayout extends FrameLayout
                     @Override
                     public void onClick(View v)
                     {
-                        if (mRetryListener != null)
-                            mRetryListener.onRetry();
+                        if (mNetErrorRetryListener != null)
+                            mNetErrorRetryListener.onNetErrorRetry();
                     }
                 });
             mNetErrorView.setVisibility(View.VISIBLE);
@@ -280,18 +281,33 @@ public class StateFrameLayout extends FrameLayout
     }
 
     /**
-     * 设置重试监听
+     * 设置网络错误重试监听
      *
      * @param listener 重试监听
      */
-    public void setOnRetryListener(OnRetryListener listener)
+    public void setOnNetErrorRetryListener(OnNetErrorRetryListener listener)
     {
-        this.mRetryListener = listener;
+        this.mNetErrorRetryListener = listener;
     }
 
-    public interface OnRetryListener
+    /**
+     * 设置空数据重试监听
+     *
+     * @param listener 重试监听
+     */
+    public void setOnEmptyRetryListener(OnEmptyRetryListener listener)
     {
-        void onRetry();
+        this.mEmptyRetryListener = listener;
+    }
+
+    public interface OnNetErrorRetryListener
+    {
+        void onNetErrorRetry();
+    }
+
+    public interface OnEmptyRetryListener
+    {
+        void onEmptyRetry();
     }
 
     /****************************************************** 状态恢复 ***********************************************************************/

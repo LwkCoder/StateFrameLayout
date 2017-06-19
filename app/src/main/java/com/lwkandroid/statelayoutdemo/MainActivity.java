@@ -18,12 +18,20 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mStateFrameLayout = (StateFrameLayout) findViewById(R.id.stateLayout);
-        mStateFrameLayout.setOnRetryListener(new StateFrameLayout.OnRetryListener()
+        mStateFrameLayout.setOnNetErrorRetryListener(new StateFrameLayout.OnNetErrorRetryListener()
         {
             @Override
-            public void onRetry()
+            public void onNetErrorRetry()
             {
-                Toast.makeText(MainActivity.this, "点击重试", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "点击网络错误重试", Toast.LENGTH_LONG).show();
+            }
+        });
+        mStateFrameLayout.setOnEmptyRetryListener(new StateFrameLayout.OnEmptyRetryListener()
+        {
+            @Override
+            public void onEmptyRetry()
+            {
+                Toast.makeText(MainActivity.this, "点击空数据重试", Toast.LENGTH_LONG).show();
             }
         });
         findViewById(R.id.btn_loading).setOnClickListener(new View.OnClickListener()
