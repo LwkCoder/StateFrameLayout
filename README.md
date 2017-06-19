@@ -65,13 +65,22 @@ Gradle中引用
     //是否在展示内容布局的时候开启动画（200ms的Alpha动画）
     mStateFrameLayout.enableContentAnim(true);
 
-    //设置点击“重试”监听
-    mStateFrameLayout.setOnRetryListener(new StateFrameLayout.OnRetryListener()
+    //设置网络错误重试监听
+    mStateFrameLayout.setOnNetErrorRetryListener(new StateFrameLayout.OnNetErrorRetryListener()
     {
         @Override
-        public void onRetry()
+        public void onNetErrorRetry()
         {
-            //TODO 在这里响应重试操作
+            //TODO 在这里相应重试操作
+        }
+    });
+    //设置空数据重试监听
+    mStateFrameLayout.setOnEmptyRetryListener(new StateFrameLayout.OnEmptyRetryListener()
+    {
+        @Override
+        public void onEmptyRetry()
+        {
+            //TODO 在这里相应重试操作
         }
     });
 ```

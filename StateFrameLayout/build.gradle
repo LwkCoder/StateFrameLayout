@@ -31,7 +31,7 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 def lib_name = "StateFrameLayout";
-version = "1.0.0"
+version = "1.0.1"
 group = "com.lwkandroid"
 def siteUrl = 'https://github.com/Vanish136/StateFrameLayout'
 def gitUrl = 'https://github.com/Vanish136/StateFrameLayout.git'
