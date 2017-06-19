@@ -10,7 +10,7 @@
 
 Gradle中引用
 ```
-    compile 'com.lwkandroid:StateFrameLayout:1.0.0'
+    compile 'com.lwkandroid:StateFrameLayout:1.0.1'
 ```
 
 ### xml中定义
