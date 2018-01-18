@@ -101,6 +101,13 @@ Gradle中引用
 
 <br />
 
+### 混淆配置
+```
+-dontwarn com.lwkandroid.widget.stateframelayout.**
+-keep class com.lwkandroid.widget.stateframelayout.**{*;}
+```
+<br />
+
 ### 参考
 MaterialPageStateLayout: https://github.com/Syehunter/MaterialPageStateLayout <br />
 感谢所有为开源做出贡献的人们！
