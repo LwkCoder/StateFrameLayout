@@ -1,17 +1,20 @@
-package com.lwkandroid.stateframelayout;
+package com.lwkandroid.widget.stateframelayout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
+
+import com.lwkandroid.stateframelayout.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -46,13 +49,10 @@ public class StateFrameLayout extends FrameLayout
     /*NetError视图布局id*/
     protected int mNetErrorLayoutId = -1;
     /*Loading视图*/
-    protected ViewStub mVsLoading;
     protected View mLoadingView;
     /*Empty视图*/
-    protected ViewStub mVsEmpty;
     protected View mEmptyView;
     /*NetError视图*/
-    protected ViewStub mVsNetError;
     protected View mNetErrorView;
     /*内容视图*/
     protected View mContentView;
@@ -65,6 +65,8 @@ public class StateFrameLayout extends FrameLayout
     protected OnEmptyRetryListener mEmptyRetryListener;
     protected OnNetErrorRetryListener mNetErrorRetryListener;
     protected boolean mHasInit = false;
+    protected int mEmptyRetryId = R.id.id_sfl_empty_retry;
+    protected int mNetErrorRetryId = R.id.id_sfl_net_error_retry;
 
     public StateFrameLayout(Context context)
     {
@@ -103,6 +105,63 @@ public class StateFrameLayout extends FrameLayout
         }
     }
 
+    public void setLoadingView(View loadingView)
+    {
+        if (mLoadingView != null)
+        {
+            removeView(mLoadingView);
+            mLoadingView = null;
+        }
+
+        this.mLoadingView = loadingView;
+        if (mLoadingView != null)
+            addView(mLoadingView);
+        changeState(mCurState, true);
+    }
+
+    public void setLoadingViewLayoutId(@LayoutRes int layoutId)
+    {
+        this.mLoadingLayoutId = layoutId;
+    }
+
+    public void setEmptyView(View loadingView)
+    {
+        if (mEmptyView != null)
+        {
+            removeView(mEmptyView);
+            mEmptyView = null;
+        }
+
+        this.mEmptyView = loadingView;
+        if (mEmptyView != null)
+            addView(mEmptyView);
+        changeState(mCurState, true);
+    }
+
+    public void setEmptyViewLayoutId(@LayoutRes int layoutId)
+    {
+        this.mEmptyLayoutId = layoutId;
+    }
+
+    public void setNetErrorView(View netErrorView)
+    {
+        if (mNetErrorView != null)
+        {
+            removeView(mNetErrorView);
+            mNetErrorView = null;
+        }
+
+        this.mNetErrorView = netErrorView;
+        if (mNetErrorView != null)
+            addView(mNetErrorView);
+        changeState(mCurState, true);
+    }
+
+    public void setNetErrorViewLayoutId(@LayoutRes int layoutId)
+    {
+        this.mNetErrorLayoutId = layoutId;
+    }
+
     @Override
     protected void onFinishInflate()
     {
@@ -115,26 +174,8 @@ public class StateFrameLayout extends FrameLayout
                 if (getChildCount() > 0)
                     mContentView = getChildAt(0);
             }
-            if (mLoadingLayoutId != -1)
-            {
-                mVsLoading = new ViewStub(getContext());
-                mVsLoading.setLayoutResource(mLoadingLayoutId);
-                addView(mVsLoading);
-            }
-            if (mEmptyLayoutId != -1)
-            {
-                mVsEmpty = new ViewStub(getContext());
-                mVsEmpty.setLayoutResource(mEmptyLayoutId);
-                addView(mVsEmpty);
-            }
-            if (mNetErrorLayoutId != -1)
-            {
-                mVsNetError = new ViewStub(getContext());
-                mVsNetError.setLayoutResource(mNetErrorLayoutId);
-                addView(mVsNetError);
-            }
             //切换到初始状态
-            changeState(INIT);
+            changeState(INIT, false);
             mHasInit = true;
         }
     }
@@ -146,7 +187,18 @@ public class StateFrameLayout extends FrameLayout
      */
     public void changeState(@State int state)
     {
-        if (mCurState == state)
+        changeState(state, false);
+    }
+
+    /**
+     * 切换状态
+     *
+     * @param state        状态标识
+     * @param forceRefresh 是否强制刷新
+     */
+    public void changeState(@State int state, boolean forceRefresh)
+    {
+        if (!forceRefresh && mCurState == state)
             return;
 
         hideAllViews();
@@ -164,6 +216,7 @@ public class StateFrameLayout extends FrameLayout
             checkContentView();
         }
         mCurState = state;
+        Log.e("sss", "当前状态：" + mCurState);
     }
 
     /*隐藏所有布局*/
@@ -184,10 +237,10 @@ public class StateFrameLayout extends FrameLayout
     {
         if (mLoadingView == null)
         {
-            if (mVsLoading != null)
-                mLoadingView = mVsLoading.inflate();
-            else if (mLoadingLayoutId != -1)
+            if (mLoadingLayoutId != -1)
                 mLoadingView = LayoutInflater.from(getContext()).inflate(mLoadingLayoutId, this, false);
+            if (mLoadingView != null)
+                addView(mLoadingView);
         }
         if (mLoadingView != null)
         {
@@ -200,14 +253,14 @@ public class StateFrameLayout extends FrameLayout
     {
         if (mEmptyView == null)
         {
-            if (mVsEmpty != null)
-                mEmptyView = mVsEmpty.inflate();
-            else if (mEmptyLayoutId != -1)
+            if (mEmptyLayoutId != -1)
                 mEmptyView = LayoutInflater.from(getContext()).inflate(mEmptyLayoutId, this, false);
+            if (mEmptyView != null)
+                addView(mEmptyView);
         }
         if (mEmptyView != null)
         {
-            View v = mEmptyView.findViewById(R.id.id_sfl_empty_retry);
+            View v = mEmptyView.findViewById(mEmptyRetryId);
             if (v != null)
                 v.setOnClickListener(new OnClickListener()
                 {
@@ -227,14 +280,14 @@ public class StateFrameLayout extends FrameLayout
     {
         if (mNetErrorView == null)
         {
-            if (mVsNetError != null)
-                mNetErrorView = mVsNetError.inflate();
-            else if (mNetErrorLayoutId != -1)
+            if (mNetErrorLayoutId != -1)
                 mNetErrorView = LayoutInflater.from(getContext()).inflate(mNetErrorLayoutId, this, false);
+            if (mNetErrorView != null)
+                addView(mNetErrorView);
         }
         if (mNetErrorView != null)
         {
-            View v = mNetErrorView.findViewById(R.id.id_sfl_net_error_retry);
+            View v = mNetErrorView.findViewById(mNetErrorRetryId);
             if (v != null)
                 v.setOnClickListener(new OnClickListener()
                 {
@@ -300,6 +353,30 @@ public class StateFrameLayout extends FrameLayout
         this.mEmptyRetryListener = listener;
     }
 
+    /**
+     * 设置网络错误重试监听
+     *
+     * @param netRetryId 触发监听的控件id
+     * @param listener   重试监听
+     */
+    public void setOnNetErrorRetryListener(int netRetryId, OnNetErrorRetryListener listener)
+    {
+        this.mNetErrorRetryId = netRetryId;
+        this.mNetErrorRetryListener = listener;
+    }
+
+    /**
+     * 设置空数据重试监听
+     *
+     * @param emptyRetryId 触发监听的控件id
+     * @param listener     重试监听
+     */
+    public void setOnEmptyRetryListener(int emptyRetryId, OnEmptyRetryListener listener)
+    {
+        this.mEmptyRetryId = emptyRetryId;
+        this.mEmptyRetryListener = listener;
+    }
+
     public interface OnNetErrorRetryListener
     {
         void onNetErrorRetry();
@@ -340,7 +417,7 @@ public class StateFrameLayout extends FrameLayout
         mEmptyLayoutId = ss.emptyId;
         mNetErrorLayoutId = ss.netErrorId;
         mEnableContentAnim = ss.enableAnim;
-        changeState(ss.lastState);
+        changeState(ss.lastState, false);
     }
 
     static class SavedViewState extends BaseSavedState

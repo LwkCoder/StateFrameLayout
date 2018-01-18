@@ -3,9 +3,10 @@ package com.lwkandroid.statelayoutdemo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.lwkandroid.stateframelayout.StateFrameLayout;
+import com.lwkandroid.widget.stateframelayout.StateFrameLayout;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -18,6 +19,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mStateFrameLayout = (StateFrameLayout) findViewById(R.id.stateLayout);
+        View emptyView = getLayoutInflater().inflate(R.layout.layout_empty, (ViewGroup) findViewById(android.R.id.content), false);
+        mStateFrameLayout.setEmptyView(emptyView);
+        mStateFrameLayout.setNetErrorViewLayoutId(R.layout.layout_net_error);
+
         mStateFrameLayout.setOnNetErrorRetryListener(new StateFrameLayout.OnNetErrorRetryListener()
         {
             @Override

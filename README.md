@@ -7,16 +7,23 @@
 `StateFrameLayout` 继承自`FrameLayout`，内部实现了一句代码切换各种状态的功能（各状态的布局均需要在xml指定，具有高度定制性），并且内部实现了状态缓存，无需担心内存回收后重新打开界面会导致状态被重置（可打开手机开发者选项中的“不保留活动”来验证）。
 
 ## 使用
+【最新版本号以[这里](https://github.com/Vanish136/StateFrameLayout/releases)为准】
 
 Gradle中引用
 ```
-    compile 'com.lwkandroid:StateFrameLayout:1.0.1'
+    #last-version请查看上面的最新版本号
+
+    #AndroidStudio3.0以下
+    compile 'com.lwkandroid.widget:StateFrameLayout:last-version'
+
+    #AndroidStudio3.0以上
+    implemetation 'com.lwkandroid.widget:StateFrameLayout:last-version'
 ```
 
 ### xml中定义
 
 ```
-    <com.lwkandroid.stateframelayout.StateFrameLayout
+    <com.lwkandroid.widget.stateframelayout.StateFrameLayout
         android:id="@+id/stateLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -43,7 +50,6 @@ Gradle中引用
 
     </com.lwkandroid.stateframelayout.StateFrameLayout>
 ```
-**备注：** 此外，对于空数据和网络错误的状态提供了**重试**接口，需要在空数据或网络错误布局中指定触发的view对应的id：`android:id="@id/id_sfl_empty_retry"`或`android:id="@id/id_sfl_net_error_retry"`
 
 <br />
 
@@ -65,8 +71,8 @@ Gradle中引用
     //是否在展示内容布局的时候开启动画（200ms的Alpha动画）
     mStateFrameLayout.enableContentAnim(true);
 
-    //设置网络错误重试监听
-    mStateFrameLayout.setOnNetErrorRetryListener(new StateFrameLayout.OnNetErrorRetryListener()
+    //设置网络错误重试监听【不传netRetryId的话需要在对应布局中设置触发控件的id为android:id="@id/id_sfl_net_error_retry"】
+    mStateFrameLayout.setOnNetErrorRetryListener(int netRetryId,new StateFrameLayout.OnNetErrorRetryListener()
     {
         @Override
         public void onNetErrorRetry()
@@ -74,8 +80,8 @@ Gradle中引用
             //TODO 在这里相应重试操作
         }
     });
-    //设置空数据重试监听
-    mStateFrameLayout.setOnEmptyRetryListener(new StateFrameLayout.OnEmptyRetryListener()
+    //设置空数据重试监听【不传emptyRetryId的话需要在对应布局中设置触发控件的id为android:id="@id/id_sfl_empty_retry"】
+    mStateFrameLayout.setOnEmptyRetryListener(int emptyRetryId,new StateFrameLayout.OnEmptyRetryListener()
     {
         @Override
         public void onEmptyRetry()
