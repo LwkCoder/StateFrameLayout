@@ -14,10 +14,10 @@ Gradle中引用
     #last-version请查看上面的最新版本号
 
     #AndroidStudio3.0以下
-    compile 'com.lwkandroid.widget:StateFrameLayout:last-version'
+    compile 'com.lwkandroid:StateFrameLayout:last-version'
 
     #AndroidStudio3.0以上
-    implemetation 'com.lwkandroid.widget:StateFrameLayout:last-version'
+    implemetation 'com.lwkandroid:StateFrameLayout:last-version'
 ```
 
 ### xml中定义
