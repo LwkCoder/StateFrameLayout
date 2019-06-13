@@ -15,7 +15,7 @@
 Gradle中引用
 ```
     #last-version请查看上面的最新版本号
-    implementation 'com.lwkandroid.widget:StateFrameLayout:last-version'
+    implementation 'com.lwkandroid:StateFrameLayout:last-version'
 ```
 
 ### 全局配置

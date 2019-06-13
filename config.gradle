@@ -5,7 +5,7 @@ ext {
     ]
     bintray = [
             version       : "2.0.0", // 指定库的版本号
-            group         : "com.lwkandroid.widget", // 库的group名，确定好之后不能修改
+            group         : "com.lwkandroid", // 库的group名，确定好之后不能修改
             libName       : 'StateFrameLayout',// 库的名称
 
             siteUrl       : 'https://github.com/Vanish136/StateFrameLayout', // 项目开源地址
