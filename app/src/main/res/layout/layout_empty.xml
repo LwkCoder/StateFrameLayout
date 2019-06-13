@@ -19,7 +19,7 @@
             android:textColor="@android:color/black"/>
 
         <Button
-            android:id="@id/id_sfl_empty_retry"
+            android:id="@+id/btn_empty_retry"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

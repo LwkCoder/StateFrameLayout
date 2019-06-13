@@ -20,7 +20,7 @@
 
         <!--响应重试接口需要指定id-->
         <Button
-            android:id="@id/id_sfl_net_error_retry"
+            android:id="@+id/btn_net_error_retry"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

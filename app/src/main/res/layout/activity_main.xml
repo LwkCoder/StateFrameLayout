@@ -38,11 +38,10 @@
             android:text="success"/>
     </LinearLayout>
 
-    <com.lwkandroid.widget.stateframelayout.StateFrameLayout
+    <com.lwkandroid.widget.StateFrameLayout
         android:id="@+id/stateLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:enableContentAnim="true"
         app:loadingLayoutResId="@layout/layout_loading">
 
         <!--在这里定义内容布局，内容布局只能有一个-->
@@ -52,6 +51,7 @@
             android:background="@android:color/holo_green_dark">
 
             <TextView
+                android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -60,6 +60,6 @@
 
         </FrameLayout>
 
-    </com.lwkandroid.widget.stateframelayout.StateFrameLayout>
+    </com.lwkandroid.widget.StateFrameLayout>
 
 </LinearLayout>
