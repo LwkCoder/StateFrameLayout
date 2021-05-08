@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION as int
@@ -14,7 +13,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly "androidx.annotation:annotation:${LIB_ANDROIDX_SUPPORT_VERSION}"
+    compileOnly "androidx.annotation:annotation:${AppcompatVersion}"
 }
 
 allprojects {
@@ -26,5 +25,3 @@ allprojects {
         }
     }
 }
-
-apply from: "upload.gradle"

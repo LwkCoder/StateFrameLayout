@@ -15,7 +15,9 @@
 Gradle中引用
 ```
     #last-version请查看上面的最新版本号
-    implementation 'com.lwkandroid:StateFrameLayout:last-version'
+    #2.0.0迁移到MavenCentral后引用方式如下
+
+    implementation 'com.lwkandroid.library:StateFrameLayout:last-version'
 ```
 
 ### 全局配置
