@@ -106,10 +106,7 @@ public class DemoApplication extends Application
 <br />
 
 ### 混淆配置
-```
--dontwarn com.lwkandroid.widget.stateframelayout.**
--keep class com.lwkandroid.widget.stateframelayout.**{*;}
-```
+无需特别混淆规则
 <br />
 
 ### 参考
