@@ -82,6 +82,11 @@ public class DemoApplication extends Application
     mStateFrameLayout.setNetErrorLayoutId(R.layout.layout_net_error);
     //设置内容视图的显示动画
     mStateFrameLayout.setContentAnimation(BaseContentAnimation animation);
+
+    #2.1.0开始新增方法
+    mStateFrameLayout.setEmptyView(View view);
+    mStateFrameLayout.setLoadingView(View view);
+    mStateFrameLayout.setNetErrorView(View view);
     
     //切换到Init初始状态，所有视图均不可见，这也是StateFrameLayout加载完成后的默认状态
     mStateFrameLayout.switchToInitState();

@@ -15,8 +15,9 @@ import androidx.annotation.LayoutRes;
 
 /**
  * 配合各状态切换的FrameLayout
+ *
+ * @author LWK
  */
-
 public class StateFrameLayout extends FrameLayout
 {
     /**
@@ -32,22 +33,6 @@ public class StateFrameLayout extends FrameLayout
      */
     private int mNetErrorLayoutId = -1;
     /**
-     * Loading视图
-     */
-    private View mLoadingView;
-    /**
-     * Empty视图
-     */
-    private View mEmptyView;
-    /**
-     * NetError视图
-     */
-    private View mNetErrorView;
-    /**
-     * 内容视图
-     */
-    private View mContentView;
-    /**
      * 内容视图显示动画
      */
     private boolean mEnableContentAnim = StateFrameLayoutManager.getGlobalOptions().isEnableContentAnim();
@@ -55,7 +40,7 @@ public class StateFrameLayout extends FrameLayout
      * 当前状态
      */
     @LayoutState
-    private int mCurState;
+    private int mCurState = StateConstants.NONE;
     /**
      * 内容视图动画
      */
@@ -77,30 +62,40 @@ public class StateFrameLayout extends FrameLayout
         init(context, attrs);
     }
 
+    @Override
+    protected void onFinishInflate()
+    {
+        super.onFinishInflate();
+        if (!mHasInit)
+        {
+            if (getChildCount() > 0)
+            {
+                getChildAt(0).setTag(StateConstants.TAG_CONTENT);
+            }
+            setChildViewWithTag(StateConstants.TAG_EMPTY, inflateChildLayout(mEmptyLayoutId));
+            setChildViewWithTag(StateConstants.TAG_LOADING, inflateChildLayout(mLoadingLayoutId));
+            setChildViewWithTag(StateConstants.TAG_ERROR, inflateChildLayout(mNetErrorLayoutId));
+
+            //切换到初始状态
+            switchToInitState();
+            mHasInit = true;
+        }
+    }
+
     private void init(Context context, AttributeSet attrs)
     {
         //获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.StateFrameLayout);
         if (ta != null)
         {
-            int count = ta.getIndexCount();
-            for (int i = 0; i < count; i++)
-            {
-                int index = ta.getIndex(i);
-                if (index == R.styleable.StateFrameLayout_loadingLayoutResId)
-                {
-                    mLoadingLayoutId = ta.getResourceId(index, StateFrameLayoutManager.getGlobalOptions().getLoadingLayoutId());
-                } else if (index == R.styleable.StateFrameLayout_emptyLayoutResId)
-                {
-                    mEmptyLayoutId = ta.getResourceId(index, StateFrameLayoutManager.getGlobalOptions().getEmptyLayoutId());
-                } else if (index == R.styleable.StateFrameLayout_netErrorLayoutResId)
-                {
-                    mNetErrorLayoutId = ta.getResourceId(index, StateFrameLayoutManager.getGlobalOptions().getNetErrorLayoutId());
-                } else if (index == R.styleable.StateFrameLayout_enableContentAnim)
-                {
-                    mEnableContentAnim = ta.getBoolean(index, StateFrameLayoutManager.getGlobalOptions().isEnableContentAnim());
-                }
-            }
+            mLoadingLayoutId = ta.getResourceId(R.styleable.StateFrameLayout_loadingLayoutResId,
+                    StateFrameLayoutManager.getGlobalOptions().getLoadingLayoutId());
+            mEmptyLayoutId = ta.getResourceId(R.styleable.StateFrameLayout_emptyLayoutResId,
+                    StateFrameLayoutManager.getGlobalOptions().getEmptyLayoutId());
+            mNetErrorLayoutId = ta.getResourceId(R.styleable.StateFrameLayout_netErrorLayoutResId,
+                    StateFrameLayoutManager.getGlobalOptions().getNetErrorLayoutId());
+            mEnableContentAnim = ta.getBoolean(R.styleable.StateFrameLayout_enableContentAnim,
+                    StateFrameLayoutManager.getGlobalOptions().isEnableContentAnim());
             ta.recycle();
         }
     }
@@ -110,8 +105,7 @@ public class StateFrameLayout extends FrameLayout
      */
     public void switchToInitState()
     {
-        hideAllViews();
-        mCurState = StateConstants.INIT;
+        realSwitchState(StateConstants.INIT);
     }
 
     /**
@@ -119,13 +113,7 @@ public class StateFrameLayout extends FrameLayout
      */
     public void switchToEmptyState()
     {
-        hideAllViews();
-        if (mEmptyView == null)
-        {
-            throw new IllegalArgumentException("You can't switch to Empty State with no layout resource id assigned.");
-        }
-        mEmptyView.setVisibility(VISIBLE);
-        mCurState = StateConstants.EMPTY;
+        realSwitchState(StateConstants.EMPTY);
     }
 
     /**
@@ -133,13 +121,7 @@ public class StateFrameLayout extends FrameLayout
      */
     public void switchToLoadingState()
     {
-        hideAllViews();
-        if (mLoadingView == null)
-        {
-            throw new IllegalArgumentException("You can't switch to Loading State with no layout resource id assigned.");
-        }
-        mLoadingView.setVisibility(VISIBLE);
-        mCurState = StateConstants.LOADING;
+        realSwitchState(StateConstants.LOADING);
     }
 
     /**
@@ -147,13 +129,7 @@ public class StateFrameLayout extends FrameLayout
      */
     public void switchToNetErrorState()
     {
-        hideAllViews();
-        if (mNetErrorView == null)
-        {
-            throw new IllegalArgumentException("You can't switch to NetError State with no layout resource id assigned.");
-        }
-        mNetErrorView.setVisibility(VISIBLE);
-        mCurState = StateConstants.NET_ERROR;
+        realSwitchState(StateConstants.NET_ERROR);
     }
 
     /**
@@ -161,26 +137,7 @@ public class StateFrameLayout extends FrameLayout
      */
     public void switchToContentState()
     {
-        hideAllViews();
-        if (mContentView == null)
-        {
-            if (getChildCount() == 0)
-            {
-                throw new IllegalArgumentException("You have to set a Content Layout into StateFrameLayout at xml resource.");
-            }
-            //内容视图必须是最先加入的,index=0
-            mContentView = getChildAt(0);
-            if (mContentView == null)
-            {
-                throw new IllegalArgumentException("You have to set a Content Layout into StateFrameLayout at xml resource.");
-            }
-        }
-        if (mEnableContentAnim)
-        {
-            mContentAnimation.startAnim(mContentView);
-        }
-        mContentView.setVisibility(VISIBLE);
-        mCurState = StateConstants.CONTENT;
+        realSwitchState(StateConstants.CONTENT);
     }
 
     /**
@@ -190,16 +147,19 @@ public class StateFrameLayout extends FrameLayout
      */
     public void setEmptyLayoutId(@LayoutRes int layoutId)
     {
-        if (mEmptyLayoutId == layoutId)
-        {
-            return;
-        }
         this.mEmptyLayoutId = layoutId;
-        initEmptyView();
-        if (mCurState == StateConstants.EMPTY)
-        {
-            switchToEmptyState();
-        }
+        setEmptyView(inflateChildLayout(mEmptyLayoutId));
+    }
+
+    /**
+     * 【2.1.0版本新增】
+     * 设置Empty状态对应的View
+     *
+     * @param view
+     */
+    public void setEmptyView(View view)
+    {
+        setChildViewWithTag(StateConstants.TAG_EMPTY, view);
     }
 
     /**
@@ -209,16 +169,19 @@ public class StateFrameLayout extends FrameLayout
      */
     public void setLoadingLayoutId(@LayoutRes int layoutId)
     {
-        if (mLoadingLayoutId == layoutId)
-        {
-            return;
-        }
         this.mLoadingLayoutId = layoutId;
-        initLoadingView();
-        if (mCurState == StateConstants.LOADING)
-        {
-            switchToLoadingState();
-        }
+        setLoadingView(inflateChildLayout(mLoadingLayoutId));
+    }
+
+    /**
+     * 【2.1.0版本新增】
+     * 设置Loading状态对应的View
+     *
+     * @param view
+     */
+    public void setLoadingView(View view)
+    {
+        setChildViewWithTag(StateConstants.TAG_LOADING, view);
     }
 
     /**
@@ -228,16 +191,19 @@ public class StateFrameLayout extends FrameLayout
      */
     public void setNetErrorLayoutId(@LayoutRes int layoutId)
     {
-        if (mNetErrorLayoutId == layoutId)
-        {
-            return;
-        }
         this.mNetErrorLayoutId = layoutId;
-        initNetErrorView();
-        if (mCurState == StateConstants.NET_ERROR)
-        {
-            switchToNetErrorState();
-        }
+        setNetErrorView(inflateChildLayout(mNetErrorLayoutId));
+    }
+
+    /**
+     * 【2.1.0版本新增】
+     * 设置NetError状态对应的View
+     *
+     * @param view
+     */
+    public void setNetErrorView(View view)
+    {
+        setChildViewWithTag(StateConstants.TAG_ERROR, view);
     }
 
     /**
@@ -250,117 +216,42 @@ public class StateFrameLayout extends FrameLayout
         this.mContentAnimation = animation;
     }
 
-    @Override
-    protected void onFinishInflate()
-    {
-        super.onFinishInflate();
-        if (!mHasInit)
-        {
-            initEmptyView();
-            initLoadingView();
-            initNetErrorView();
-            //切换到初始状态
-            switchToInitState();
-            mHasInit = true;
-        }
-    }
-
-    /**
-     * 初始化EmptyView
-     */
-    private void initEmptyView()
-    {
-        if (mEmptyView != null && mEmptyView.getParent() != null)
-        {
-            removeView(mEmptyView);
-            mEmptyView = null;
-        }
-        if (mEmptyLayoutId == -1)
-        {
-            mEmptyLayoutId = StateFrameLayoutManager.getGlobalOptions().getEmptyLayoutId();
-        }
-        if (mEmptyLayoutId != -1)
-        {
-            mEmptyView = inflateChildLayout(mEmptyLayoutId);
-            addView(mEmptyView);
-        }
-    }
-
-    private void initLoadingView()
-    {
-        if (mLoadingView != null && mLoadingView.getParent() != null)
-        {
-            removeView(mLoadingView);
-            mLoadingView = null;
-        }
-        if (mLoadingLayoutId == -1)
-        {
-            mLoadingLayoutId = StateFrameLayoutManager.getGlobalOptions().getLoadingLayoutId();
-        }
-        if (mLoadingLayoutId != -1)
-        {
-            mLoadingView = inflateChildLayout(mLoadingLayoutId);
-            addView(mLoadingView);
-        }
-    }
-
-    private void initNetErrorView()
-    {
-        if (mNetErrorView != null && mNetErrorView.getParent() != null)
-        {
-            removeView(mNetErrorView);
-            mNetErrorView = null;
-        }
-        if (mNetErrorLayoutId == -1)
-        {
-            mNetErrorLayoutId = StateFrameLayoutManager.getGlobalOptions().getNetErrorLayoutId();
-        }
-        if (mNetErrorLayoutId != -1)
-        {
-            mNetErrorView = inflateChildLayout(mNetErrorLayoutId);
-            addView(mNetErrorView);
-        }
-    }
-
-    /**
-     * 切换状态
-     *
-     * @param state
-     */
-    protected void changeState(@LayoutState int state)
-    {
-        if (state == StateConstants.INIT)
-        {
-            switchToInitState();
-        } else if (state == StateConstants.EMPTY)
-        {
-            switchToEmptyState();
-        } else if (state == StateConstants.LOADING)
-        {
-            switchToLoadingState();
-        } else if (state == StateConstants.CONTENT)
-        {
-            switchToContentState();
-        } else if (state == StateConstants.NET_ERROR)
-        {
-            switchToNetErrorState();
-        }
-    }
-
     private View inflateChildLayout(@LayoutRes int layoutId)
     {
-        return LayoutInflater.from(getContext()).inflate(layoutId, this, false);
+        View view = null;
+        try
+        {
+            view = LayoutInflater.from(getContext()).inflate(layoutId, this, false);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return view;
     }
 
     /**
-     * 隐藏所有布局
+     * 除了指定Tag的View外，隐藏其他全部View
+     *
+     * @param tag
+     * @return 指定的View
      */
-    private void hideAllViews()
+    private View hideViewsExcept(Object tag)
     {
+        View indexChild = null;
         for (int i = 0, count = getChildCount(); i < count; i++)
         {
-            getChildAt(i).setVisibility(GONE);
+            View child = getChildAt(i);
+            if (tag != null && tag == child.getTag())
+            {
+                child.setVisibility(VISIBLE);
+                indexChild = child;
+            } else
+            {
+                child.setVisibility(GONE);
+            }
         }
+        return indexChild;
     }
 
     /**
@@ -377,6 +268,71 @@ public class StateFrameLayout extends FrameLayout
     public void enableContentAnim(boolean enable)
     {
         this.mEnableContentAnim = enable;
+    }
+
+    /**
+     * 内部执行切换状态的方法
+     *
+     * @param targetState 目标状态
+     */
+    private void realSwitchState(int targetState)
+    {
+        if (mCurState == targetState)
+        {
+            return;
+        }
+
+        if (StateConstants.INIT == targetState)
+        {
+            hideViewsExcept(StateConstants.TAG_INIT);
+        } else if (StateConstants.EMPTY == targetState)
+        {
+            hideViewsExcept(StateConstants.TAG_EMPTY);
+        } else if (StateConstants.LOADING == targetState)
+        {
+            hideViewsExcept(StateConstants.TAG_LOADING);
+        } else if (StateConstants.NET_ERROR == targetState)
+        {
+            hideViewsExcept(StateConstants.TAG_ERROR);
+        } else if (StateConstants.CONTENT == targetState)
+        {
+            View contentView = hideViewsExcept(StateConstants.TAG_CONTENT);
+            if (mEnableContentAnim && mContentAnimation != null
+                    && contentView != null)
+            {
+                mContentAnimation.startAnim(contentView);
+            }
+        }
+        mCurState = targetState;
+    }
+
+    /**
+     * 根据Tag设置子View
+     *
+     * @param tag
+     * @param childView
+     */
+    private void setChildViewWithTag(Object tag, View childView)
+    {
+        int visibility = View.GONE;
+        for (int i = 0, count = getChildCount(); i < count; i++)
+        {
+            View child = getChildAt(i);
+            if (tag == child.getTag())
+            {
+                //存在相同tag的view需要先移除
+                visibility = child.getVisibility();
+                removeView(child);
+                break;
+            }
+        }
+
+        if (childView != null)
+        {
+            childView.setTag(tag);
+            addView(childView);
+            childView.setVisibility(visibility);
+        }
     }
 
     /****************************************************** 状态恢复 ***********************************************************************/
@@ -409,7 +365,7 @@ public class StateFrameLayout extends FrameLayout
         mEmptyLayoutId = ss.emptyId;
         mNetErrorLayoutId = ss.netErrorId;
         mEnableContentAnim = ss.enableAnim;
-        changeState(ss.lastState);
+        realSwitchState(ss.lastState);
     }
 
     static class SavedViewState extends BaseSavedState

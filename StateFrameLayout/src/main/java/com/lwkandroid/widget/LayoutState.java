@@ -11,7 +11,12 @@ import androidx.annotation.IntDef;
  * @author LWK
  * @date 2019/6/11
  */
-@IntDef({StateConstants.INIT, StateConstants.LOADING, StateConstants.EMPTY, StateConstants.NET_ERROR, StateConstants.CONTENT})
+@IntDef({StateConstants.NONE,
+        StateConstants.INIT,
+        StateConstants.LOADING,
+        StateConstants.EMPTY,
+        StateConstants.NET_ERROR,
+        StateConstants.CONTENT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface LayoutState
 {

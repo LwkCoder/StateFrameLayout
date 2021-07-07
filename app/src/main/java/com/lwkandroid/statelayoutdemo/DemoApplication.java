@@ -1,10 +1,7 @@
 package com.lwkandroid.statelayoutdemo;
 
-import android.animation.Animator;
 import android.app.Application;
-import android.view.View;
 
-import com.lwkandroid.widget.BaseContentAnimation;
 import com.lwkandroid.widget.StateFrameLayoutManager;
 
 /**
@@ -24,14 +21,6 @@ public class DemoApplication extends Application
                 .setEmptyLayoutId(R.layout.layout_empty)
                 .setLoadingLayoutId(R.layout.layout_loading)
                 .setNetErrorLayoutId(R.layout.layout_net_error)
-                .setEnableContentAnim(true)
-                .setContentAnim(new BaseContentAnimation()
-                {
-                    @Override
-                    public Animator[] getAnimator(View v)
-                    {
-                        return new Animator[0];
-                    }
-                });
+                .setEnableContentAnim(true);
     }
 }

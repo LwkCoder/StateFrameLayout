@@ -32,17 +32,16 @@
             android:text="neterror"/>
 
         <Button
-            android:id="@+id/btn_success"
+            android:id="@+id/btn_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="success"/>
+            android:text="content"/>
     </LinearLayout>
 
     <com.lwkandroid.widget.StateFrameLayout
         android:id="@+id/stateLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:loadingLayoutResId="@layout/layout_loading">
+        android:layout_height="match_parent">
 
         <!--在这里定义内容布局，内容布局只能有一个-->
         <FrameLayout
