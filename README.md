@@ -1,7 +1,9 @@
 # StateFrameLayout
 
+【不再维护，如有bug、需求，请自行clone源码修改】
 
 ## 简介
+
 项目中经常遇到这样一种情况，新打开的界面需要加载数据，存在多种状态的结果，需要根据不同结果展示界面，这个过程归纳起来可以分为五种状态：**初始状态Init、请求状态Loading、空数据状态Empty、网络错误状态NetError、成功请求状态Content。** 如果多个界面都存在这个流程，那么封装整个过程的调用就很有必要了，既可以简化调用过程，又可以很方便的管理整个流程。
 
 `StateFrameLayout` 继承自`FrameLayout`，内部实现了一句代码切换各种状态的功能，并且内部实现了状态缓存，无需担心内存回收后重新打开界面会导致状态被重置（可打开手机开发者选项中的“不保留活动”来验证）。
@@ -103,10 +105,10 @@ public class DemoApplication extends Application
 <br >
 
 ## 效果图
-![](https://github.com/Vanish136/StateFrameLayout/raw/master/pics/sample01.png)
-![](https://github.com/Vanish136/StateFrameLayout/raw/master/pics/sample02.png)
-![](https://github.com/Vanish136/StateFrameLayout/raw/master/pics/sample03.png)
-![](https://github.com/Vanish136/StateFrameLayout/raw/master/pics/sample04.png)
+![](https://github.com/LwkCoder/StateFrameLayout/raw/master/pics/sample01.png)
+![](https://github.com/LwkCoder/StateFrameLayout/raw/master/pics/sample02.png)
+![](https://github.com/LwkCoder/StateFrameLayout/raw/master/pics/sample03.png)
+![](https://github.com/LwkCoder/StateFrameLayout/raw/master/pics/sample04.png)
 
 <br />
 
